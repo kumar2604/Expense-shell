@@ -7,6 +7,8 @@ LOGFILE=/tmp/$SCRIPT_NAME-$TIMESTAMP.log
 R="\e[31m"
 G="\e[32m"
 N="\e[0m"
+echo "please enter DB password:"
+read -s mysql_root_password 
 
 
 VALIDATE(){
@@ -35,13 +37,13 @@ VALIDATE $? "enabling mysqld"
 systemctl start mysqld &>>$LOGFILE
 VALIDATE $? "starting mysqld"
 
-mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
-VALIDATE $? "setting up root password"
+#mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
+#VALIDATE $? "setting up root password"
 
-mysql -h 172.31.22.129 -uroot -pExpenseApp@1 -e 'show databases;' &>>$LOGFILE
+mysql -h 172.31.22.129 -uroot -p${mysql_root_password} -e 'show databases;' &>>$LOGFILE
 if [ $? -ne 0 ]
 then 
-     mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
+     mysql_secure_installation --set-root-pass ${mysql_root_password} &>>$LOGFILE
      VALIDATE $? "Mysql Root Password setup"
 else
      echo -e "Mysql Root Password is already setup.... $Y SKIPPING $N"
